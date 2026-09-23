@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PetScript Pharmacy Veterinary Prescription</title>
+  <style>
+    :root {
+      --navy: #17365d;
+      --blue: #59b7d9;
+      --ink: #172033;
+      --line: #9ca8b8;
+      --paper: #fff;
+      --screen: #eef2f6;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--screen);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(23, 54, 93, .96);
+      box-shadow: 0 3px 14px rgba(0,0,0,.16);
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary { background: var(--blue); color: #08253a; }
+    .secondary { background: #fff; color: var(--navy); }
+
+    .sheet {
+      width: 8.5in;
+      min-height: 11in;
+      margin: 22px auto;
+      padding: .32in .4in .26in;
+      background: var(--paper);
+      box-shadow: 0 8px 28px rgba(20, 35, 55, .16);
+    }
+    .header {
+      display: grid;
+      grid-template-columns: 2.65in 1fr;
+      align-items: center;
+      gap: .22in;
+      padding-bottom: 8px;
+      border-bottom: 3px solid var(--navy);
+    }
+    .logo { display: block; width: 2.5in; height: auto; }
+    .company { text-align: right; line-height: 1.35; }
+    .company .name { color: var(--navy); font-size: 15px; font-weight: 800; }
+    .company .phone { font-size: 12px; font-weight: 700; }
+    .company .return { margin-top: 3px; font-size: 10px; }
+    .company .return strong { color: var(--navy); }
+
+    h1 {
+      margin: 8px 0 6px;
+      color: var(--navy);
+      font-size: 17px;
+      line-height: 1;
+      text-align: center;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    .section {
+      margin-top: 6px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .section-title {
+      padding: 4px 7px;
+      background: var(--navy);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .45px;
+      text-transform: uppercase;
+    }
+    .grid {
+      display: grid;
+      gap: 4px 8px;
+      padding: 5px 7px 6px;
+    }
+    .cols-2 { grid-template-columns: 1fr 1fr; }
+    .cols-3 { grid-template-columns: 1.35fr .9fr .75fr; }
+    .cols-4 { grid-template-columns: 1.3fr .8fr .7fr .65fr; }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    label {
+      display: block;
+      color: #35445a;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+    input, textarea, select {
+      width: 100%;
+      margin-top: 1px;
+      border: 0;
+      border-bottom: 1px solid #66758b;
+      border-radius: 0;
+      outline: 0;
+      background: transparent;
+      color: #111827;
+      font: 10px Arial, Helvetica, sans-serif;
+      line-height: 1.15;
+      padding: 2px 2px 1px;
+    }
+    input { height: 18px; }
+    textarea {
+      height: 32px;
+      resize: none;
+      border: 1px solid #8995a7;
+      padding: 4px;
+    }
+    input:focus, textarea:focus, select:focus { background: #f3fbfe; }
+
+    .rx-grid {
+      display: grid;
+      grid-template-columns: 1.65fr .72fr .62fr .55fr;
+      gap: 4px 8px;
+      padding: 5px 7px 6px;
+    }
+    .rx-grid .full { grid-column: 1 / -1; }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px 13px;
+      min-height: 18px;
+      font-size: 9px;
+    }
+    .checkbox-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--ink);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    input[type="checkbox"] { width: 12px; height: 12px; margin: 0; }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1.75fr .55fr;
+      gap: 8px;
+      padding: 5px 7px 6px;
+    }
+    .signature-box {
+      position: relative;
+      height: 54px;
+      margin-top: 2px;
+      border: 1px solid #8995a7;
+      background: white;
+    }
+    #signaturePad { display: block; width: 100%; height: 100%; touch-action: none; }
+    .clear-signature {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      padding: 3px 7px;
+      border: 1px solid #c5ccd6;
+      border-radius: 3px;
+      background: rgba(255,255,255,.9);
+      color: #526074;
+      font-size: 8px;
+      font-weight: 700;
+    }
+    .staff-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .8fr .62fr;
+      gap: 8px;
+      padding: 5px 7px 6px;
+    }
+    .footer {
+      margin-top: 7px;
+      padding-top: 5px;
+      border-top: 2px solid var(--blue);
+      text-align: center;
+      color: var(--navy);
+      font-size: 9px;
+      font-weight: 700;
+    }
+    .footer span { white-space: nowrap; }
+    .privacy-note {
+      margin-top: 3px;
+      color: #6a7483;
+      font-size: 7px;
+      font-weight: 400;
+    }
+
+    @media (max-width: 850px) {
+      .sheet { width: calc(100% - 18px); height: auto; min-height: 0; margin: 9px auto; padding: 16px; }
+      .header { grid-template-columns: 1fr; }
+      .company { text-align: left; }
+      .cols-2, .cols-3, .cols-4, .rx-grid, .signature-grid, .staff-grid { grid-template-columns: 1fr; }
+      .span-2, .span-3, .span-4, .rx-grid .full { grid-column: 1; }
+    }
+
+    @page { size: Letter portrait; margin: 0; }
+    @media print {
+      html, body { width: 8.5in; height: 11in; background: white; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .toolbar, .clear-signature { display: none !important; }
+      .sheet {
+        width: 8.5in;
+        height: 11in;
+        min-height: 11in;
+        margin: 0;
+        padding: .32in .4in .26in;
+        box-shadow: none;
+        overflow: hidden;
+      }
+      input, textarea, select { color: #000; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar" aria-label="Form actions">
+    <button class="primary" id="downloadBtn" type="button">Download Completed PDF</button>
+    <button class="secondary" id="resetBtn" type="button">Clear Form</button>
+  </div>
+
+  <main class="sheet" id="rxForm">
+    <header class="header">
+      <img class="logo" src="assets/petscript-logo.png" alt="PetScript Pharmacy">
+      <div class="company">
+        <div class="name">PetScript Pharmacy</div>
+        <div class="phone">Phone: 866-784-6915</div>
+        <div class="return"><strong>RETURN RX:</strong> Fax 903-785-1357 &nbsp;|&nbsp; RX@petscript.net</div>
+      </div>
+    </header>
+
+    <h1>Veterinary Prescription Form</h1>
+
+    <section class="section">
+      <div class="section-title">Prescribing Clinic</div>
+      <div class="grid cols-3">
+        <label>Clinic name<input type="text" autocomplete="organization"></label>
+        <label>Phone<input type="tel" autocomplete="tel"></label>
+        <label>Fax<input type="tel"></label>
+        <label class="span-2">Address<input type="text" autocomplete="street-address"></label>
+        <label>Email<input type="email" autocomplete="email"></label>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Prescribing Veterinarian</div>
+      <div class="grid cols-3">
+        <label>Veterinarian name<input type="text"></label>
+        <label>License number<input type="text"></label>
+        <label>License expiration<input type="date"></label>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Patient</div>
+      <div class="grid cols-4">
+        <label>Pet name<input type="text" data-field="pet-name"></label>
+        <label>Species<input type="text"></label>
+        <label>DOB or age<input type="text"></label>
+        <label>Weight<input type="text" placeholder="lb / kg"></label>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Pet Parent / Owner</div>
+      <div class="grid cols-3">
+        <label>Owner name(s)<input type="text" data-field="owner-name" autocomplete="name"></label>
+        <label>Phone<input type="tel"></label>
+        <label>Email<input type="email"></label>
+        <label class="span-3">Address<input type="text" autocomplete="street-address"></label>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Prescription</div>
+      <div class="rx-grid">
+        <label>Medication / strength / dosage form<input type="text"></label>
+        <label>Quantity<input type="text"></label>
+        <label>Refills<input type="text"></label>
+        <label>Rx date<input type="date"></label>
+        <label class="full">Directions for use<textarea></textarea></label>
+        <label class="full">Special instructions / flavor / notes<input type="text"></label>
+        <div class="full checkbox-row">
+          <strong>Substitution:</strong>
+          <label><input type="checkbox"> Permitted</label>
+          <label><input type="checkbox"> Dispense as written</label>
+          <strong>Rx type:</strong>
+          <label><input type="checkbox"> Written</label>
+          <label><input type="checkbox"> Verbal</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Veterinarian Authorization</div>
+      <div class="signature-grid">
+        <label>Veterinarian signature
+          <div class="signature-box">
+            <canvas id="signaturePad" aria-label="Veterinarian signature pad"></canvas>
+            <button class="clear-signature" id="clearSignature" type="button">Clear signature</button>
+          </div>
+        </label>
+        <label>Date signed<input type="date"></label>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">PetScript Internal Use</div>
+      <div class="staff-grid">
+        <label>CSR responsible for Rx<input type="text"></label>
+        <label>Pharmacist initials (verbal Rx)<input type="text"></label>
+        <label>Date received<input type="date"></label>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>PetScript Pharmacy</span> &nbsp;•&nbsp;
+      <span>866-784-6915</span> &nbsp;•&nbsp;
+      <span>Fax 903-785-1357</span> &nbsp;•&nbsp;
+      <span>RX@petscript.net</span>
+      <div class="privacy-note">Print or save this completed form only through an approved, secure PetScript workflow.</div>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+    (() => {
+      const canvas = document.getElementById('signaturePad');
+      const context = canvas.getContext('2d');
+      let drawing = false;
+
+      function resizeCanvas() {
+        const saved = canvas.width ? canvas.toDataURL() : null;
+        const rect = canvas.getBoundingClientRect();
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = Math.round(rect.width * ratio);
+        canvas.height = Math.round(rect.height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        context.lineWidth = 1.7;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        context.strokeStyle = '#111827';
+        if (saved) {
+          const image = new Image();
+          image.onload = () => context.drawImage(image, 0, 0, rect.width, rect.height);
+          image.src = saved;
+        }
+      }
+
+      function point(event) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      }
+
+      canvas.addEventListener('pointerdown', event => {
+        drawing = true;
+        canvas.setPointerCapture(event.pointerId);
+        const p = point(event);
+        context.beginPath();
+        context.moveTo(p.x, p.y);
+      });
+      canvas.addEventListener('pointermove', event => {
+        if (!drawing) return;
+        const p = point(event);
+        context.lineTo(p.x, p.y);
+        context.stroke();
+      });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(type => {
+        canvas.addEventListener(type, () => { drawing = false; });
+      });
+
+      document.getElementById('clearSignature').addEventListener('click', () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      });
+      document.getElementById('downloadBtn').addEventListener('click', async () => {
+        const button = document.getElementById('downloadBtn');
+        const petName = document.querySelector('input[data-field="pet-name"]')?.value.trim() || 'Patient';
+        const ownerName = document.querySelector('input[data-field="owner-name"]')?.value.trim() || 'Owner';
+        const safeName = value => value.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
+        const date = new Date().toISOString().slice(0, 10);
+
+        button.disabled = true;
+        button.textContent = 'Creating PDF…';
+        try {
+          const sheet = document.getElementById('rxForm');
+          const imageCanvas = await html2canvas(sheet, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            width: sheet.scrollWidth,
+            height: sheet.scrollHeight,
+            windowWidth: 1200
+          });
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter', compress: true });
+          pdf.addImage(imageCanvas.toDataURL('image/jpeg', 0.96), 'JPEG', 0, 0, 612, 792, undefined, 'FAST');
+          pdf.save(`PetScript_RX_${safeName(petName)}_${safeName(ownerName)}_${date}.pdf`);
+        } catch (error) {
+          console.error(error);
+          alert('The PDF could not be created. Please refresh the page and try again.');
+        } finally {
+          button.disabled = false;
+          button.textContent = 'Download Completed PDF';
+        }
+      });
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        if (!window.confirm('Clear every field and the signature?')) return;
+        document.querySelectorAll('#rxForm input').forEach(input => {
+          if (input.type === 'checkbox') input.checked = false;
+          else input.value = '';
+        });
+        document.querySelectorAll('#rxForm textarea').forEach(field => { field.value = ''; });
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      });
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+    })();
+  </script>
+</body>
+</html>
