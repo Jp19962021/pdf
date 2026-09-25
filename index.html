@@ -45,12 +45,13 @@
 
     .sheet {
       width: 8.5in;
-      height: 11in;
+      min-height: 11in;
+      height: auto;
       margin: 22px auto;
       padding: .25in .34in .22in;
       background: var(--paper);
       box-shadow: 0 8px 28px rgba(20, 35, 55, .16);
-      overflow: hidden;
+      overflow: visible;
     }
     .header {
       display: grid;
@@ -261,11 +262,11 @@
 
     .sheet.exporting {
       width: 816px !important;
-      height: 1056px !important;
+      height: auto !important;
       min-height: 1056px !important;
       margin: 0 !important;
       padding: 24px 33px 21px !important;
-      overflow: hidden !important;
+      overflow: visible !important;
       box-shadow: none !important;
     }
     .sheet.exporting .clinic-grid { grid-template-columns: repeat(4, 1fr) !important; }
@@ -274,7 +275,7 @@
     .sheet.exporting .medication-grid .directions { grid-column: 1 / 4 !important; }
     .sheet.exporting .signature-grid { grid-template-columns: 1.8fr .55fr !important; }
     .sheet.exporting .staff-grid { grid-template-columns: 1.25fr .8fr .62fr !important; }
-    .sheet.exporting .pdf-hide { display: none !important; }
+    .sheet.exporting .pdf-hide, .sheet.exporting .clear-signature { display: none !important; }
     .sheet.exporting.compact-export .header { padding-bottom: 7px; }
     .sheet.exporting.compact-export .logo { width: 2.55in; }
     .sheet.exporting.compact-export h1 { margin: 6px 0 4px; font-size: 18px; }
@@ -538,9 +539,9 @@
           }
 
           sheet.classList.add('exporting');
-          if (medicationList.children.length >= 3) sheet.classList.add('compact-export');
+          if (medicationList.children.length >= 2) sheet.classList.add('compact-export');
           await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-          if (sheet.scrollHeight > sheet.clientHeight && !sheet.classList.contains('compact-export')) {
+          if (sheet.scrollHeight > 1056 && !sheet.classList.contains('compact-export')) {
             sheet.classList.add('compact-export');
             await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           }
@@ -552,12 +553,16 @@
             imageTimeout: 0,
             logging: false,
             width: 816,
-            height: 1056,
+            height: Math.ceil(sheet.scrollHeight),
             windowWidth: 1200
           });
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter', compress: true });
-          pdf.addImage(imageCanvas.toDataURL('image/jpeg', 0.96), 'JPEG', 0, 0, 612, 792, undefined, 'FAST');
+          // Fit the complete form proportionally on ONE Letter page, never crop it.
+          const fit = Math.min(612 / imageCanvas.width, 792 / imageCanvas.height);
+          const pdfWidth = imageCanvas.width * fit;
+          const pdfHeight = imageCanvas.height * fit;
+          pdf.addImage(imageCanvas.toDataURL('image/jpeg', 0.96), 'JPEG', (612 - pdfWidth) / 2, 0, pdfWidth, pdfHeight, undefined, 'FAST');
           pdf.save(`PetScript_RX_${safeName(petName)}_${safeName(ownerName)}_${date}.pdf`);
         } catch (error) {
           console.error(error);
