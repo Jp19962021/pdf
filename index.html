@@ -102,6 +102,7 @@
     .clinic-grid { grid-template-columns: repeat(4, 1fr); }
     .owner-grid { grid-template-columns: 1.3fr .7fr; }
     .cols-4 { grid-template-columns: 1.3fr .8fr .7fr .65fr; }
+    .patient-grid { grid-template-columns: 1.2fr .8fr .8fr .7fr .65fr; }
     .span-2 { grid-column: span 2; }
     .span-3 { grid-column: span 3; }
     .span-4 { grid-column: span 4; }
@@ -350,9 +351,10 @@
 
     <section class="section">
       <div class="section-title">Patient</div>
-      <div class="grid cols-4">
+      <div class="grid patient-grid">
         <label>Pet name<input type="text" data-field="pet-name"></label>
         <label>Species<input type="text"></label>
+        <label>Sex / gender<input type="text" aria-label="Pet sex or gender"></label>
         <label>DOB or age<input type="text"></label>
         <label>Weight<input type="text" placeholder="lb / kg"></label>
       </div>
@@ -392,9 +394,6 @@
           <strong>Substitution:</strong>
           <label><input type="checkbox"> Permitted</label>
           <label><input type="checkbox"> Dispense as written</label>
-          <strong>Rx type:</strong>
-          <label><input type="checkbox"> Written</label>
-          <label><input type="checkbox"> Verbal</label>
         </div>
       </div>
     </section>
@@ -414,6 +413,13 @@
 
     <section class="section">
       <div class="section-title">PetScript Internal Use</div>
+      <div class="rx-options">
+        <div class="checkbox-row">
+          <strong>Rx type:</strong>
+          <label><input type="checkbox"> Written</label>
+          <label><input type="checkbox"> Verbal</label>
+        </div>
+      </div>
       <div class="staff-grid">
         <label>CSR responsible for Rx<input type="text"></label>
         <label>Pharmacist initials (verbal Rx)<input type="text"></label>
@@ -426,7 +432,7 @@
       <span>866-784-6915</span> &nbsp;•&nbsp;
       <span>Fax 903-785-1357</span> &nbsp;•&nbsp;
       <span>RX@petscript.net</span>
-      <div class="privacy-note"></div>
+      <div class="privacy-note">Print or save this completed form only through an approved, secure PetScript workflow.</div>
     </footer>
   </main>
 
